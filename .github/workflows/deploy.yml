@@ -1,0 +1,25 @@
+name: Deploy
+
+on:
+  ['deploy']
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1.0.0
+
+      - name: s3ls
+        uses: chrislennon/action-aws-cli@v1.1
+      # All commands after this point have access to the AWS CLI
+      - run: aws s3 ls
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+# do your deployment here, using whatever tooling you like:
+    - name: 'Deploy ${{ github.event.deployment.environment }}'
+      run: |
+        echo "task - ${{ github.event.deployment.task }}"
+        echo "environment - ${{ github.event.deployment.environment }}"
+        echo "payload - ${{ toJson(github.event.deployment.payload) }}"
